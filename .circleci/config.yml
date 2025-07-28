@@ -8,6 +8,25 @@ orbs:
   terraform: circleci/terraform@3.2.1
 
 jobs:
+  bootstrap:
+    docker:
+      - image: cimg/python:3.12
+    steps:
+      - checkout
+      - aws-cli/install
+      - run:
+          name: Install Python Dependencies
+          command: pip install boto3 PyGithub
+      - run:
+          name: Run bootstrap script if SAM stack not deployed
+          command: |
+            if aws cloudformation describe-stacks --stack-name rds-automation-stack --region "$AWS_REGION" > /dev/null 2>&1; then
+              echo "SAM stack already exists – skipping bootstrap."
+            else
+              echo "SAM stack not found – running bootstrap..."
+              python .circleci/bootstrap.py
+            fi
+
   deploy-serverless:
     docker:
       - image: cimg/python:3.12
@@ -82,7 +101,13 @@ workflows:
   version: 2
   serverless-rds-provision:
     jobs:
+      - bootstrap:
+          filters:
+            branches:
+              only: main
       - deploy-serverless:
+          requires:
+            - bootstrap
           filters:
             branches:
               only: main
