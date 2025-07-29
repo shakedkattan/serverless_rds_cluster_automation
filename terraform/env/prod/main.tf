@@ -10,7 +10,7 @@ data "aws_ssm_parameter" "db_password" {
 
 locals {
   mysql_list    = []
-  postgres_list = []
+  postgres_list = ["testdb", ]
 
   # Map DB name
   engine_map = merge(
