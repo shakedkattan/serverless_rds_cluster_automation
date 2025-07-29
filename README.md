@@ -32,7 +32,7 @@ This project provides a fully automated, serverless solution for provisioning **
 5. Run the pipeline. Only for the first time, it will run bootstrap.py to set everything. then it will create the SAM stack
 6. That's it! your SAM stack is now expecting JSONs from the API Gateway's /request Invoke URL
     JSON Curl Example:
- ```json
+ ```bash
   curl -X POST https://YOUR_URL.execute-api.YOUR_REGION.amazonaws.com/provision/request \
   -H "Content-Type: application/json" \
   -d '{
