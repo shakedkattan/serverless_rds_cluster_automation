@@ -1,4 +1,4 @@
-# 🌀 Automated Serverless RDS Cluster Provisioning
+# 🌀 Serverless RDS Cluster Provisioning Automation
 
 ##  OVERVIEW
 
