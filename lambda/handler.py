@@ -18,7 +18,7 @@ logger.setLevel(logging.ERROR)
 
 # ENV Vars
 GITHUB_TOKEN = os.environ["GITHUB_TOKEN"]
-GITHUB_REPO = os.environ.get("GITHUB_REPO", "shakedkattan/automated_serverless_rds_cluster")
+GITHUB_REPO = os.environ.get("GITHUB_REPO", "shakedkattan/serverless_rds_cluster_automation")
 BRANCH_BASE = os.environ.get("BRANCH_BASE", "main")
 
 # GitHub Client
