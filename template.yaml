@@ -237,7 +237,7 @@ Resources:
         Variables:
           SQS_QUEUE_URL: !Ref SQSQueue
           SNS_TOPIC_ARN: !Ref SNSTopic
-          GITHUB_TOKEN: !Sub '{{resolve:secretsmanager:github-access-token:SecretString:token}}'
+          GITHUB_TOKEN: !Sub '{{resolve:secretsmanager:github-lambda-token:SecretString:token}}'
 
           
 # ================================================================================
