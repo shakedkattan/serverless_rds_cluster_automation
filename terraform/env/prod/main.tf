@@ -1,11 +1,11 @@
-#data "aws_ssm_parameter" "db_username" {
-#  name = "/project/db/username"
-#}
+data "aws_ssm_parameter" "db_username" {
+  name = "/project/db/username"
+}
 
-#data "aws_ssm_parameter" "db_password" {
-#  name            = "/project/db/password"
-#  with_decryption = true
-#}
+data "aws_ssm_parameter" "db_password" {
+  name            = "/project/db/password"
+  with_decryption = true
+}
 
 locals {
   mysql_list    = []
@@ -20,10 +20,8 @@ locals {
 
   shared_settings = {
     instance_class       = "db.t3.micro"
-    #username = data.aws_ssm_parameter.db_username.value
-    username = "masteruser"
-    #password = data.aws_ssm_parameter.db_password.value
-    password = "masterpw"
+    db_username = data.aws_ssm_parameter.db_username.value
+    db_password = data.aws_ssm_parameter.db_password.value
     db_subnet_group_name = aws_db_subnet_group.prod_rds.name
     security_group_ids   = [aws_security_group.prod_rds.id]
     allocated_storage    = 20
@@ -54,13 +52,13 @@ locals {
 module "prod_rds_instances" {
   for_each = local.rds_definitions
 
-  source = "git::https://github.com/shakedkattan/automated_serverless_rds_cluster.git//terraform/modules/rds?ref=main"
+  source = "git::https://github.com/shakedkattan/serverless_rds_cluster_automation.git//terraform/modules/rds?ref=main"
 
   name                 = each.value.name
   engine               = each.value.engine
   instance_class       = each.value.instance_class
-  username             = each.value.username
-  password             = each.value.password
+  username             = each.value.db_username
+  password             = each.value.db_password
   db_subnet_group_name = each.value.db_subnet_group_name
   security_group_ids   = each.value.security_group_ids
   allocated_storage    = each.value.allocated_storage
