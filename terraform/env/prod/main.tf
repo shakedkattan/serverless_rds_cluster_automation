@@ -28,12 +28,12 @@ locals {
   }
 
   rds_customs = {
-    #"payments-db" = {
-      #instance_class = "db.t3.small"
-    #},
-    #"analytics-db" = {
-      #allocated_storage = 21
-    #}
+#    "payments-db" = {    (USE LIKE SO)
+#      instance_class = "db.t3.small"
+#   },
+#    "analytics-db" = {
+#      allocated_storage = 21
+#    }
   }
 
 
