@@ -1,5 +1,6 @@
 data "aws_ssm_parameter" "db_username" {
-  name = "/project/db/username"
+  name            = "/project/db/username"
+  with_decryption = true
 }
 
 data "aws_ssm_parameter" "db_password" {
@@ -20,8 +21,8 @@ locals {
 
   shared_settings = {
     instance_class       = "db.t3.micro"
-    db_username = data.aws_ssm_parameter.db_username.value
-    db_password = data.aws_ssm_parameter.db_password.value
+    db_username          = data.aws_ssm_parameter.db_username.value
+    db_password          = data.aws_ssm_parameter.db_password.value
     db_subnet_group_name = aws_db_subnet_group.prod_rds.name
     security_group_ids   = [aws_security_group.prod_rds.id]
     allocated_storage    = 20
