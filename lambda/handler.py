@@ -79,7 +79,7 @@ def lambda_handler(event, context):
         env = raw_body["env"]
         engine = raw_body["engine"]
     except (KeyError, json.JSONDecodeError) as e:
-        logger.error("❌ Bad payload: %s", str(e))
+        logger.error("Bad payload: %s", str(e))
         return {"statusCode": 400, "body": "Invalid request"}
 
     branch_name = f"rds-pr-{db_name}-{datetime.utcnow().strftime('%Y%m%d%H%M%S')}"
@@ -130,9 +130,9 @@ def lambda_handler(event, context):
         
 # ================================================================================  
         
-        logger.info("✅ PR URL: %s", pr.html_url)
+        logger.info("PR URL: %s", pr.html_url)
         return {"statusCode": 200, "body": f"PR created: {pr.html_url}"}
 
     except Exception as e:
-        logger.error("❌ Failed to create PR: %s", str(e))
+        logger.error("Failed to create PR: %s", str(e))
         return {"statusCode": 500, "body": "Error creating PR"}
