@@ -35,7 +35,7 @@ jobs:
       - aws-cli/install
       - sam/install
       - run:
-          name: Conditionally Deploy Serverless Stack with SAM
+          name: Deploy Serverless Stack with SAM
           command: |
              MERGE_MSG=$(git log -1 --pretty=%B)
               if [[ "$MERGE_MSG" == Merge\ pull\ request* ]]; then
