@@ -24,11 +24,11 @@ This project provides a fully automated, serverless solution for provisioning **
 3. Set up a Project by selecting the repo, Branch = main
 4. In Project Settings, set up 2 GitHub Triggers: Push to default branch, PR merged
 4. Define Environment Variables:
-    AWS_ACCESS_KEY_ID=your-secret-access-key
-    AWS_SECRET_ACCESS_KEY=your-secret-key
-    AWS_REGION=any-region-1
-    DB_USERNAME=db-username-you-want
-    DB_PASSWORD=db-password-you-want
+   - AWS_ACCESS_KEY_ID=your-secret-access-key
+   - AWS_SECRET_ACCESS_KEY=your-secret-key
+   - AWS_REGION=any-region-1
+   - DB_USERNAME=db-username-you-want
+   - DB_PASSWORD=db-password-you-want
 5. Run the pipeline. Only for the first time, it will run bootstrap.py to set everything. then create the SAM stack.
 6. That's it! your SAM stack is now expecting JSONs from the API Gateway's /request Invoke URL.
     JSON Example:
