@@ -1,5 +1,6 @@
 data "aws_ssm_parameter" "db_username" {
-  name = "/project/db/username"
+  name            = "/project/db/username"
+  with_decryption = true
 }
 
 data "aws_ssm_parameter" "db_password" {
