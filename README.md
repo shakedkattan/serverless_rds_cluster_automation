@@ -40,5 +40,5 @@ This project provides a fully automated, serverless solution for provisioning **
     "env": "prod",
     "engine": "postgres"
   }'
-
+```
 * Private note - I wanted to optimize the lambda function even more using layers, editing resource usage configuration like RAM and more. but couldn't reach it on time. also, there's no auto-cleanup script so if you deploy be careful.
