@@ -166,6 +166,7 @@ Resources:
             Condition:
               ArnEquals:
                 aws:SourceArn: !Ref SNSTopic
+                
 # -----------------------------
 # SECTION: Lambda for RDS Provision 
 # -----------------------------
@@ -195,6 +196,7 @@ Resources:
           SQS_QUEUE_URL: !Ref SQSQueue
           SNS_TOPIC_ARN: !Ref SNSTopic
           GITHUB_TOKEN: !Sub '{{resolve:secretsmanager:github-lambda-token:SecretString:token}}'
+          
 # -----------------------------
 # SECTION: Application Insights
 # -----------------------------
