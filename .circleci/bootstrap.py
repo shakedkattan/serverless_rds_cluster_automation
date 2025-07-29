@@ -15,14 +15,14 @@ from pathlib import Path
 # - Commits changes back to GitHub
 # ================================================================================
 
-AWS_REGION = os.getenv("AWS_REGION", "eu-central-1")  # Default region if not set
+AWS_REGION = os.getenv("AWS_REGION")  # Default region if not set
 AWS_ACCESS_KEY = os.environ["AWS_ACCESS_KEY_ID"]
 AWS_SECRET_KEY = os.environ["AWS_SECRET_ACCESS_KEY"]
 GITHUB_USERNAME = os.environ["CIRCLE_PROJECT_USERNAME"]
 DB_USERNAME = os.environ["DB_USERNAME"]
 DB_PASSWORD = os.environ["DB_PASSWORD"]
 
-REPO_NAME = "automated_serverless_rds_cluster"
+REPO_NAME = "serverless_rds_cluster_automation"
 REPO_PATH = Path.cwd()  # Local path for working with the repo
 
 # =============================================================================
@@ -122,18 +122,23 @@ def main():
     r'bucket\s*=\s*".*?"': f'bucket = "{GITHUB_USERNAME}-devops-tfstate-bucket"'
         })
         update_file(f"terraform/env/{env}/vpc.tf", {
-            r'git::https://github.com/.+?/automated_serverless_rds_cluster.git//terraform/modules/vpc\?ref=main':
-            f'git::https://github.com/{GITHUB_USERNAME}/automated_serverless_rds_cluster.git//terraform/modules/vpc?ref=main',
+            r'git::https://github.com/.+?/automation_serverless_rds_cluster.git//terraform/modules/vpc\?ref=main':
+            f'git::https://github.com/{GITHUB_USERNAME}/serverless_rds_cluster_automation.git//terraform/modules/vpc?ref=main',
             r'public_subnet_az\s*=\s*".*?"': f'public_subnet_az = "{AWS_REGION}a"',
             r'private_subnet_azs\s*=\s*\[.*?\]': f'private_subnet_azs = ["{AWS_REGION}a", "{AWS_REGION}b"]',
             r'private_subnet_cidrs\s*=\s*\[.*?\]': 'private_subnet_cidrs = ["10.0.2.0/24", "10.0.3.0/24"]',
         })
         update_file(f"terraform/env/{env}/main.tf", {
-            r'git::https://github.com/.+?/automated_serverless_rds_cluster.git//terraform/modules/rds\?ref=main':
-            f'git::https://github.com/{GITHUB_USERNAME}/automated_serverless_rds_cluster.git//terraform/modules/rds?ref=main',
+            r'git::https://github.com/.+?/serverless_rds_cluster_automation.git//terraform/modules/rds\?ref=main':
+            f'git::https://github.com/{GITHUB_USERNAME}/serverless_rds_cluster_automation.git//terraform/modules/rds?ref=main',
             r'name\s*=\s*"/project/db/username"': 'name = "/project/db/username"',
             r'name\s*=\s*"/project/db/password"': 'name = "/project/db/password"',
         })
+        
+    update_file("lambda/handler.py", {
+    r'GITHUB_REPO\s*=\s*os\.environ\.get\("GITHUB_REPO",\s*".*?"\)': 
+    f'GITHUB_REPO = os.environ.get("GITHUB_REPO", "{GITHUB_USERNAME}/automated_serverless_rds_cluster")'
+    })
 
     commit_to_github()
 
