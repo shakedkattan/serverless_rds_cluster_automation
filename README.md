@@ -10,7 +10,9 @@ This project provides a fully automated, serverless solution for provisioning **
 - Lambda creates a GitHub Pull Request with Terraform code merge
 - CI/CD pipeline applies the infrastructure using Terraform
 - Supports both **MySQL** and **PostgreSQL**, in **dev** and **prod** environments
-
+- Stores sensitive data in ASM & SSM
+- SAM Stack monitored by CloudWatch + special alarms
+- Least privilege IAM roles usage
 ---
 
 ##  INSTRUCTIONS
