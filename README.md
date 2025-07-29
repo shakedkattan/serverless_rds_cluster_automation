@@ -17,9 +17,9 @@ This project provides a fully automated, serverless solution for provisioning **
 
 1. Fork this repository and keep the name: serverless_rds_cluster_automation
 2. In your AWS account, create a new Secret in ASM:
-    Name: github-lambda-token
-    key: token
-    value: your github token value
+   - Name: github-lambda-token
+   - key: token
+   - value: your github token value
 2. [Log in to CircleCI](https://circleci.com/vcs-authorize) using your GitHub Auth
 3. Set up a Project by selecting the repo, Branch = main
 4. In Project Settings, set up 2 GitHub Triggers: Push to default branch, PR merged
