@@ -1,41 +1,44 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: Serverless stack for provisioning RDS (Postgres/MySQL) clusters
+
 Resources:
+# -----------------------------
+# SECTION: API Gateway
+# -----------------------------
   ApiGwLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
       LogGroupName: /aws/apigateway/rds-api
       RetentionInDays: 7
-    Metadata:
-      SamResourceId: ApiGwLogGroup
   ApiGateway:
     Type: AWS::Serverless::Api
     Properties:
       Name: RDSRequestAPI
       StageName: provision
       MethodSettings:
-      - LoggingLevel: 'OFF'
-        MetricsEnabled: true
-        ResourcePath: /*
-        HttpMethod: '*'
+        - LoggingLevel: "OFF"
+          MetricsEnabled: true
+          ResourcePath: "/*"
+          HttpMethod: "*"
       DefinitionBody:
-        swagger: '2.0'
+        swagger: "2.0"
         info:
-          title: RDSRequestAPI
-          version: '1.0'
+          title: "RDSRequestAPI"
+          version: "1.0"
         paths:
           /request:
             post:
+#             x-amazon-apigateway-api-key-required: true
               consumes:
-              - application/json
+                - application/json
               produces:
-              - application/json
+                - application/json
               parameters:
-              - in: body
-                name: body
-                schema:
-                  $ref: '#/definitions/RDSRequest'
+                - in: body
+                  name: body
+                  schema:
+                    $ref: "#/definitions/RDSRequest"
               x-amazon-apigateway-integration:
                 type: aws
                 httpMethod: POST
@@ -44,71 +47,68 @@ Resources:
                 credentials:
                   Fn::GetAtt: ApiGatewayToSNSRole.Arn
                 requestParameters:
-                  integration.request.querystring.TopicArn: '''arn:aws:sns:eu-central-1:851725584737:RDSProvisioningTopic'''
-                  integration.request.querystring.Message: method.request.body
+                  integration.request.querystring.TopicArn: !Sub ${SNSTopic}
+                  integration.request.querystring.Message: "method.request.body"
                 responses:
                   default:
-                    statusCode: '200'
+                    statusCode: "200"
                     responseTemplates:
-                      application/json: "{\n  \"message\": \"Request received successfully.\"\
-                        \n}\n"
+                      application/json: |
+                        {
+                          "message": "Request received successfully."
+                        }
         definitions:
           RDSRequest:
             type: object
             required:
-            - db_name
-            - env
-            - engine
+              - db_name
+              - env
+              - engine
             properties:
               db_name:
                 type: string
               env:
                 type: string
-                enum:
-                - dev
-                - prod
+                enum: [dev, prod]
               engine:
                 type: string
-                enum:
-                - mysql
-                - postgres
-    Metadata:
-      SamResourceId: ApiGateway
+                enum: [mysql, postgres]
+
   ApiGatewayToSNSRole:
     Type: AWS::IAM::Role
     Properties:
       RoleName: ApiGatewayToSNSRole
       AssumeRolePolicyDocument:
-        Version: '2012-10-17'
+        Version: "2012-10-17"
         Statement:
-        - Effect: Allow
-          Principal:
-            Service: apigateway.amazonaws.com
-          Action: sts:AssumeRole
-      Policies:
-      - PolicyName: ApiGatewaySNSPublish
-        PolicyDocument:
-          Version: '2012-10-17'
-          Statement:
           - Effect: Allow
-            Action: sns:Publish
-            Resource:
-              Ref: SNSTopic
-    Metadata:
-      SamResourceId: ApiGatewayToSNSRole
+            Principal:
+              Service: apigateway.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: ApiGatewaySNSPublish
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action: sns:Publish
+                Resource: !Ref SNSTopic
+
+# -----------------------------
+# SECTION: SNS and SQS
+# -----------------------------
   SNSTopic:
     Type: AWS::SNS::Topic
     Properties:
       TopicName: RDSProvisioningTopic
-    Metadata:
-      SamResourceId: SNSTopic
+
+
   RDSDLQ:
     Type: AWS::SQS::Queue
     Properties:
       QueueName: RDSProvisioningDLQ
-      MessageRetentionPeriod: 1209600
-    Metadata:
-      SamResourceId: RDSDLQ
+      MessageRetentionPeriod: 1209600 # 14 days
+
   DLQAlarm:
     Type: AWS::CloudWatch::Alarm
     Properties:
@@ -121,37 +121,25 @@ Resources:
       Threshold: 1
       ComparisonOperator: GreaterThanOrEqualToThreshold
       Dimensions:
-      - Name: QueueName
-        Value:
-          Fn::GetAtt:
-          - RDSDLQ
-          - QueueName
-      AlarmDescription: "Messages in DLQ \u2013 check failed Lambda executions"
-    Metadata:
-      SamResourceId: DLQAlarm
+        - Name: QueueName
+          Value: !GetAtt RDSDLQ.QueueName
+      AlarmDescription: "Messages in DLQ – check failed Lambda executions"
+      
   SQSQueue:
     Type: AWS::SQS::Queue
     Properties:
       QueueName: RDSProvisioningQueue
       VisibilityTimeout: 60
       RedrivePolicy:
-        deadLetterTargetArn:
-          Fn::GetAtt:
-          - RDSDLQ
-          - Arn
+        deadLetterTargetArn: !GetAtt RDSDLQ.Arn
         maxReceiveCount: 5
-    Metadata:
-      SamResourceId: SQSQueue
+
   SQSSubscription:
     Type: AWS::SNS::Subscription
     Properties:
       Protocol: sqs
-      Endpoint:
-        Fn::GetAtt:
-        - SQSQueue
-        - Arn
-      TopicArn:
-        Ref: SNSTopic
+      Endpoint: !GetAtt SQSQueue.Arn
+      TopicArn: !Ref SNSTopic
       RawMessageDelivery: true
       DeliveryPolicy:
         healthyRetryPolicy:
@@ -161,86 +149,73 @@ Resources:
           numNoDelayRetries: 1
           numMinDelayRetries: 2
           numMaxDelayRetries: 2
-          backoffFunction: linear
-    Metadata:
-      SamResourceId: SQSSubscription
+          backoffFunction: "linear"      
+
   QueuePolicy:
     Type: AWS::SQS::QueuePolicy
     Properties:
       Queues:
-      - Ref: SQSQueue
+        - !Ref SQSQueue
       PolicyDocument:
-        Version: '2012-10-17'
+        Version: "2012-10-17"
         Statement:
-        - Effect: Allow
-          Principal: '*'
-          Action: sqs:SendMessage
-          Resource:
-            Fn::GetAtt:
-            - SQSQueue
-            - Arn
-          Condition:
-            ArnEquals:
-              aws:SourceArn:
-                Ref: SNSTopic
-    Metadata:
-      SamResourceId: QueuePolicy
+          - Effect: Allow
+            Principal: "*"
+            Action: "sqs:SendMessage"
+            Resource: !GetAtt SQSQueue.Arn
+            Condition:
+              ArnEquals:
+                aws:SourceArn: !Ref SNSTopic
+# -----------------------------
+# SECTION: Lambda for RDS Provision 
+# -----------------------------
   LambdaFunction:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: RDSProvisionerFunction
       Handler: handler.lambda_handler
       Runtime: python3.12
-      CodeUri: s3://aws-sam-cli-managed-default-samclisourcebucket-3ynr0mpgixct/5843e7e9f13c5d38e75dcc9c0532e62a
+      CodeUri: lambda/
       Events:
         SQSTrigger:
           Type: SQS
           Properties:
-            Queue:
-              Fn::GetAtt:
-              - SQSQueue
-              - Arn
+            Queue: !GetAtt SQSQueue.Arn
       Policies:
-      - AWSLambdaBasicExecutionRole
-      - SQSPollerPolicy:
-          QueueName:
-            Ref: SQSQueue
-      - Version: '2012-10-17'
-        Statement:
-        - Effect: Allow
-          Action: secretsmanager:GetSecretValue
-          Resource: '*'
+        - AWSLambdaBasicExecutionRole
+        - SQSPollerPolicy:
+            QueueName: !Ref SQSQueue
+        - Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Action: secretsmanager:GetSecretValue
+              Resource: "*"
       Environment:
         Variables:
-          SQS_QUEUE_URL:
-            Ref: SQSQueue
-          SNS_TOPIC_ARN:
-            Ref: SNSTopic
-          GITHUB_TOKEN:
-            Fn::Sub: '{{resolve:secretsmanager:github-access-token:SecretString:token}}'
-    Metadata:
-      SamResourceId: LambdaFunction
+          SQS_QUEUE_URL: !Ref SQSQueue
+          SNS_TOPIC_ARN: !Ref SNSTopic
+          GITHUB_TOKEN: !Sub '{{resolve:secretsmanager:github-lambda-token:SecretString:token}}'
+# -----------------------------
+# SECTION: Application Insights
+# -----------------------------
   ApplicationResourceGroup:
     Type: AWS::ResourceGroups::Group
     Properties:
       Name:
         Fn::Join:
-        - ''
-        - - ApplicationInsights-SAM-
-          - Ref: AWS::StackName
+          - ''
+          - - ApplicationInsights-SAM-
+            - Ref: AWS::StackName
       ResourceQuery:
         Type: CLOUDFORMATION_STACK_1_0
-    Metadata:
-      SamResourceId: ApplicationResourceGroup
+
   ApplicationInsightsMonitoring:
     Type: AWS::ApplicationInsights::Application
     Properties:
       ResourceGroupName:
         Fn::Join:
-        - ''
-        - - ApplicationInsights-SAM-
-          - Ref: AWS::StackName
+          - ''
+          - - ApplicationInsights-SAM-
+            - Ref: AWS::StackName
       AutoConfigurationEnabled: 'true'
     DependsOn: ApplicationResourceGroup
-    Metadata:
-      SamResourceId: ApplicationInsightsMonitoring
