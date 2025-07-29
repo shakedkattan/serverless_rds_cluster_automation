@@ -32,7 +32,7 @@ This project provides a fully automated, serverless solution for provisioning **
    - DB_USERNAME=db-username-you-want
    - DB_PASSWORD=db-password-you-want
 5. Run the pipeline. Only for the first time, it will run bootstrap.py to set everything. then it will create the SAM stack
-6. That's it! your SAM stack is now expecting JSONs from the API Gateway's /request Invoke URL
+6. That's it! Your SAM stack is now expecting JSONs from the API Gateway's /request Invoke URL
     JSON Curl Example:
  ```bash
   curl -X POST https://YOUR_URL.execute-api.YOUR_REGION.amazonaws.com/provision/request \
