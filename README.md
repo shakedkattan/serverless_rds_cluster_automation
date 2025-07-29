@@ -7,7 +7,7 @@ This project provides a fully automated, serverless solution for provisioning **
 **KEY FEATURES**
 - Developers send a JSON request (via API Gateway)
 - Request is routed through SNS → SQS → Lambda
-- Lambda creates a GitHub Pull Request with Terraform code
+- Lambda creates a GitHub Pull Request with Terraform code merge
 - CI/CD pipeline applies the infrastructure using Terraform
 - Supports both **MySQL** and **PostgreSQL**, in **dev** and **prod** environments
 
