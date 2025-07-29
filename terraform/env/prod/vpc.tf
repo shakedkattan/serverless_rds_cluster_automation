@@ -1,5 +1,5 @@
 module "prod_vpc" {
-  source = "git::https://github.com/shakedkattan/automated_serverless_rds_cluster.git//terraform/modules/vpc?ref=main"
+  source = "git::https://github.com/shakedkattan/serverless_rds_cluster_automation.git//terraform/modules/vpc?ref=main"
 
   name                 = "prod"
   vpc_cidr             = "10.0.0.0/16"
