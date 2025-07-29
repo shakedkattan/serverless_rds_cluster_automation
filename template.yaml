@@ -55,7 +55,7 @@ Resources:
                 credentials:
                   Fn::GetAtt: ApiGatewayToSNSRole.Arn
                 requestParameters:
-                  integration.request.querystring.TopicArn: !Sub "'${SNSTopicArn}'"
+                  integration.request.querystring.TopicArn: !Sub "'${SNSTopic}'"
                   integration.request.querystring.Message: "method.request.body"
                 responses:
                   default:
