@@ -41,4 +41,4 @@ This project provides a fully automated, serverless solution for provisioning **
     "engine": "postgres"
   }'
 ```
-* Private note to you, Orel - I wanted to cost-optimize the lambda function even more using layers, editing resource usage configuration like Memory and more, but couldn't reach it on time. also, the auto-cleanup lambda is missing, so if you deploy be careful.
+* Private note to you, Orel - I wanted to cost-optimize the lambda function even more using layers, editing resource usage configuration like Memory and more, but couldn't reach it on time. Even thought, this lambda isn't supposed to run too many times in production so it won't hurt our wallet too much :)
