@@ -11,7 +11,7 @@ This project provides a fully automated, serverless solution for provisioning **
 - CI/CD pipeline applies the infrastructure using Terraform
 - Supports both **MySQL** and **PostgreSQL**, in **dev** and **prod** environments
 - Stores sensitive data in ASM & SSM
-- SAM Stack monitored by CloudWatch + special alarms
+- SAM Stack monitored by CloudWatch, Application Insights, and special alerts.
 - Least privilege IAM roles usage
 ---
 
