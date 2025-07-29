@@ -122,7 +122,7 @@ def main():
     r'bucket\s*=\s*".*?"': f'bucket = "{GITHUB_USERNAME}-devops-tfstate-bucket"'
         })
         update_file(f"terraform/env/{env}/vpc.tf", {
-            r'git::https://github.com/.+?/automation_serverless_rds_cluster.git//terraform/modules/vpc\?ref=main':
+            r'git::https://github.com/.+?/serverless_rds_cluster_automation.git//terraform/modules/vpc\?ref=main':
             f'git::https://github.com/{GITHUB_USERNAME}/serverless_rds_cluster_automation.git//terraform/modules/vpc?ref=main',
             r'public_subnet_az\s*=\s*".*?"': f'public_subnet_az = "{AWS_REGION}a"',
             r'private_subnet_azs\s*=\s*\[.*?\]': f'private_subnet_azs = ["{AWS_REGION}a", "{AWS_REGION}b"]',
@@ -137,7 +137,7 @@ def main():
         
     update_file("lambda/handler.py", {
     r'GITHUB_REPO\s*=\s*os\.environ\.get\("GITHUB_REPO",\s*".*?"\)': 
-    f'GITHUB_REPO = os.environ.get("GITHUB_REPO", "{GITHUB_USERNAME}/automated_serverless_rds_cluster")'
+    f'GITHUB_REPO = os.environ.get("GITHUB_REPO", "{GITHUB_USERNAME}/serverless_rds_cluster_automation")'
     })
 
     commit_to_github()
