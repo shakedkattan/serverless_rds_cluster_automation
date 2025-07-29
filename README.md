@@ -1,10 +1,10 @@
 # 🌀 Automated Serverless RDS Cluster Provisioning
 
-##  Overview
+##  OVERVIEW
 
 This project provides a fully automated, serverless solution for provisioning **RDS PostgreSQL/MySQL clusters** on AWS based on developer requests. It leverages API Gateway, SNS, SQS, Lambda, SSM, ASM, GitHub, Terraform, and CircleCI to enable a scalable and secure workflow.
 
-**Key Features:**
+**KEY FEATURES**
 - Developers send a JSON request (via API Gateway)
 - Request is routed through SNS → SQS → Lambda
 - Lambda creates a GitHub Pull Request with Terraform code
@@ -13,7 +13,7 @@ This project provides a fully automated, serverless solution for provisioning **
 
 ---
 
-##  Instructions
+##  INSTRUCTIONS
 
 1. Fork this repository and keep the name: serverless_rds_cluster_automation
 2. In your AWS account, create a new Secret in ASM:
