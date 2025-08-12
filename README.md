@@ -22,18 +22,18 @@ This project provides a fully automated, serverless solution for provisioning **
    - Name: github-lambda-token
    - key: token
    - value: your github token value
-2. [Log in to CircleCI](https://circleci.com/vcs-authorize) using your GitHub Auth
-3. Set up a Project by selecting the repo, Branch = main
-4. In Project Settings, set up 2 GitHub Triggers: Push to default branch, PR merged
-4. Define Environment Variables:
+3. [Log in to CircleCI](https://circleci.com/vcs-authorize) using your GitHub Auth
+4. Set up a Project by selecting the repo, Branch = main
+5. In Project Settings, set up 2 GitHub Triggers: Push to default branch, PR merged
+6. Define Environment Variables:
    - AWS_ACCESS_KEY_ID=your-secret-access-key
    - AWS_SECRET_ACCESS_KEY=your-secret-key
    - AWS_REGION=any-region-1
    - DB_USERNAME=db-username-you-want
    - DB_PASSWORD=db-password-you-want
-5. Run the pipeline. Only for the first time, it will run bootstrap.py to set everything. then it will create the SAM stack
-6. That's it! Your SAM stack is now expecting JSONs from the API Gateway's /request Invoke URL
-7. JSON Curl Example:
+7. Run the pipeline. Only for the first time, it will run bootstrap.py to set everything. then it will create the SAM stack
+8. That's it! Your SAM stack is now expecting JSONs from the API Gateway's /request Invoke URL
+9. JSON Curl Example:
  ```bash
   curl -X POST https://YOUR_URL.execute-api.YOUR_REGION.amazonaws.com/provision/request \
   -H "Content-Type: application/json" \
