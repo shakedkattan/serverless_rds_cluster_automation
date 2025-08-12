@@ -33,7 +33,7 @@ This project provides a fully automated, serverless solution for provisioning **
    - DB_PASSWORD=db-password-you-want
 5. Run the pipeline. Only for the first time, it will run bootstrap.py to set everything. then it will create the SAM stack
 6. That's it! Your SAM stack is now expecting JSONs from the API Gateway's /request Invoke URL
-    JSON Curl Example:
+7. JSON Curl Example:
  ```bash
   curl -X POST https://YOUR_URL.execute-api.YOUR_REGION.amazonaws.com/provision/request \
   -H "Content-Type: application/json" \
@@ -43,4 +43,3 @@ This project provides a fully automated, serverless solution for provisioning **
     "engine": "postgres"
   }'
 ```
-* Personal note to you, Orel - I wanted to cost-optimize the lambda function even more using layers, editing resource usage configuration like Memory and more, but couldn't reach it on time. Even though, this Lambda isn't expected to run frequently in production, so it shouldn't hurt our wallet too much. 🙂
